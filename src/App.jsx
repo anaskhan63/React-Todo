@@ -29,7 +29,7 @@ function App() {
       return;
     }
 
-    setTodos((prevTodos) => [...prevTodos, { task, priority }]);
+    setTodos((prevTodos) => [...prevTodos, { task, priority, completed: false }]);
 
     setTask("");
     setPriority("");
@@ -49,9 +49,26 @@ function App() {
     return () => clearInterval(intervalId);
   }, []);
 
+  // del todo func
+  const handleDelete = (todoToDelete) => {
+    setTodos((prevTodos) =>
+      prevTodos.filter((todo) => todo !== todoToDelete)
+    );
+  };
+
+  // done func
+  const handleDoneBtn = (index) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, idx) =>
+        idx === index ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
   return (
     <>
-      <div className="container">
+      <div className="">
+
         <header className="p-5 flex justify-evenly items-center">
           <h1 className="font-mono font-bold text-4xl text-center">
             Todo Web App
@@ -112,12 +129,43 @@ function App() {
         </section>
 
         <section>
-          {todos.map((todo, idx) => (
-            <div key={idx} className="mt-4">
-              <p>Task: {todo.task}</p>
-              <p>Priority: {todo.priority}</p>
+          <div className="mt-4">
+            <div className="p-4 w-full flex justify-center">
+              <table className="p-4 w-full">
+                <thead className="bg-red-300 text-left">
+                  <tr>
+                    <th className="p-4 bg-green-300 w-[33%]">Todo's</th>
+                    <th className="p-4 bg-green-400 w-[33%]">Priority</th>
+                    <th className="p-4 bg-green-800 w-[33%] text-center">Delete/Done</th>
+                  </tr>
+                </thead>
+                <tbody className="mt-3">
+                  {todos.map((todo, idx) => (
+                    <tr key={idx} className={`text-xl border ${todo.completed ? "line-through" : ""}`}>
+                      <td className="p-4 font-mono">
+                        {todo.task}
+                      </td>
+                      <td className="p-4 font-mono">
+                        {todo.priority}
+                      </td>
+                      <td className="p-4 font-mono text-center">
+                        <div className="flex items-center justify-center gap-4">
+                          <i
+                            onClick={() => handleDoneBtn(idx)}
+                            className={`ri-check-double-fill text-2xl cursor-pointer ${todo.completed ? 'text-green-500' : 'text-blue-500'}`}
+                          ></i>
+                          <i
+                            onClick={() => handleDelete(todo)}
+                            className="ri-delete-bin-line text-2xl text-red-600 cursor-pointer"
+                          ></i>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
+          </div>
         </section>
       </div>
     </>
